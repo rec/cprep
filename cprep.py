@@ -12,6 +12,16 @@ SPLIT = re.compile(r'([]().]|\s)').split
 def remove_terminal_whitespace(data, _):
     return '\n'.join(s.rstrip() for s in data.splitlines()) + '\n'
 
+# http://stackoverflow.com/questions/16052862
+def tabstop (s, tabnum=4):
+    if '\t' not in s:
+        return s
+    l = s.find('\t')
+    return s[0:l]+' '*(tabnum-l)+tabstop(s[l+1:],tabnum)
+
+def remove_tabs(data, _):
+    return '\n'.join(tabstop(s) for s in data.splitlines()) + '\n'
+
 def split_line(line, width, indent):
     segment = ['']
     result = []
@@ -63,6 +73,7 @@ COMMAND_TABLE = {
     'change': lambda data, _: data + '\n',
     'space': remove_terminal_whitespace,
     'split': split_by_columns,
+    'tabs': remove_tabs,
 }
 
 def get_args():
